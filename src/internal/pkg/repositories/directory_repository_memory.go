@@ -13,7 +13,7 @@ func (r *InMemoryDirectoryRepository) GetAll() ([]*models.Directory, error) {
 		&models.Directory{
 			Id:                     "id1",
 			Name:                   "name1",
-			Domain:                 "",
+			Host:                   "",
 			Type:                   "",
 			AuthenticationType:     "",
 			ClientIdConfigName:     "",

@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/configuration"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/models"
 )
 
@@ -9,6 +10,6 @@ type DirectoryRepository interface {
 	Get(identifier string) (*models.Directory, error)
 }
 
-func NewDirectoryRepository() DirectoryRepository {
-	return &InMemoryDirectoryRepository{}
+func NewDirectoryRepository(configurationService configuration.ConfigurationService) DirectoryRepository {
+	return NewDynamoDbDirectoryRepository(configurationService)
 }

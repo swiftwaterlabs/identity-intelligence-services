@@ -16,7 +16,7 @@ var (
 
 func main() {
 	configurationService := configuration.NewConfigurationService()
-	directoryRepository := repositories.NewDirectoryRepository()
+	directoryRepository := repositories.NewDirectoryRepository(configurationService)
 
 	switch strings.ToLower(*objectArgument) {
 	case "user":
