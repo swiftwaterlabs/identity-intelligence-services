@@ -4,7 +4,14 @@ import (
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/models"
 )
 
+func NewDynamoDbDirectoryRepository() *DynamoDbDirectoryRepository {
+	return &DynamoDbDirectoryRepository{
+		tableName: "identity-directories",
+	}
+}
+
 type DynamoDbDirectoryRepository struct {
+	tableName string
 }
 
 func (r *DynamoDbDirectoryRepository) GetAll() ([]*models.Directory, error) {
