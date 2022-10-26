@@ -64,6 +64,7 @@ func (r *DynamoDbDirectoryRepository) mapItemToDirectory(item map[string]*dynamo
 		Id:                     item["Id"].String(),
 		Name:                   item["Name"].String(),
 		Host:                   item["Host"].String(),
+		Base:                   item["Base"].String(),
 		Type:                   item["Type"].String(),
 		AuthenticationType:     item["AuthenticationType"].String(),
 		ClientIdConfigName:     item["ClientIdConfigName"].String(),
