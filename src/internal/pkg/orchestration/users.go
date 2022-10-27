@@ -64,10 +64,15 @@ func processDirectoryUsers(directory *models.Directory, configuration configurat
 		return err
 	}
 
+	defer directoryService.Close()
+
+	counter := 0
 	handler := func(data []*models.User) {
 		for _, item := range data {
-			log.Println(core.MapToJson(item))
+			core.MapToJson(item)
+			counter++
 		}
+		log.Printf("Prorcessed %v users in %s", counter, directory.Name)
 	}
 
 	err = directoryService.HandleUsers(handler)
