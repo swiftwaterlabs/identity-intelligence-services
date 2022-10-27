@@ -7,6 +7,7 @@ import (
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/core"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/models"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/repositories"
+	"log"
 	"strings"
 	"sync"
 )
@@ -57,5 +58,6 @@ func getDirectories(directoryName string,
 }
 
 func processDirectoryUsers(directory *models.Directory, configuration configuration.ConfigurationService) error {
+	log.Println(core.MapToJson(directory))
 	return nil
 }
