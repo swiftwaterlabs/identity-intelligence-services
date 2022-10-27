@@ -24,7 +24,7 @@ func main() {
 
 	switch strings.ToLower(*objectArgument) {
 	case "user":
-		err := orchestration.ProcessUsers(*directoryArgument, configurationService, directoryRepository)
+		err := orchestration.ExtractUsers(*directoryArgument, configurationService, directoryRepository)
 		if err != nil {
 			log.Fatal(err)
 		}

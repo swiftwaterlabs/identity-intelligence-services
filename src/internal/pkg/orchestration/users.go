@@ -7,12 +7,13 @@ import (
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/core"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/models"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/repositories"
+	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/services"
 	"log"
 	"strings"
 	"sync"
 )
 
-func ProcessUsers(directoryName string,
+func ExtractUsers(directoryName string,
 	configurationService configuration.ConfigurationService,
 	directoryRepository repositories.DirectoryRepository) error {
 
@@ -58,9 +59,18 @@ func getDirectories(directoryName string,
 }
 
 func processDirectoryUsers(directory *models.Directory, configuration configuration.ConfigurationService) error {
-	log.Println(directory.ClientIdConfigName)
-	log.Println(directory.ClientSecretConfigName)
-	log.Println(configuration.GetSecret(directory.ClientIdConfigName))
-	log.Println(configuration.GetSecret(directory.ClientSecretConfigName))
-	return nil
+	directoryService, err := services.NewDirectoryService(directory, configuration)
+	if err != nil {
+		return err
+	}
+
+	handler := func(data []*models.User) {
+		for _, item := range data {
+			log.Println(core.MapToJson(item))
+		}
+	}
+
+	err = directoryService.HandleUsers(handler)
+	return err
+
 }
