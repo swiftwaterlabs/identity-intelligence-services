@@ -6,6 +6,7 @@ import (
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/orchestration"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/repositories"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -15,8 +16,11 @@ var (
 )
 
 func main() {
-	configurationService := configuration.NewConfigurationService()
-	directoryRepository := repositories.NewDirectoryRepository(configurationService)
+	appConfig := &configuration.AppConfig{
+		AwsRegion: os.Getenv("aws_region"),
+	}
+	configurationService := configuration.NewConfigurationService(appConfig)
+	directoryRepository := repositories.NewDirectoryRepository(appConfig)
 
 	switch strings.ToLower(*objectArgument) {
 	case "user":

@@ -58,6 +58,9 @@ func getDirectories(directoryName string,
 }
 
 func processDirectoryUsers(directory *models.Directory, configuration configuration.ConfigurationService) error {
-	log.Println(core.MapToJson(directory))
+	log.Println(directory.ClientIdConfigName)
+	log.Println(directory.ClientSecretConfigName)
+	log.Println(configuration.GetSecret(directory.ClientIdConfigName))
+	log.Println(configuration.GetSecret(directory.ClientSecretConfigName))
 	return nil
 }

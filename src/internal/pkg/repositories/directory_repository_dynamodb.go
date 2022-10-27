@@ -4,12 +4,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/configuration"
-	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/core"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/models"
 )
 
-func NewDynamoDbDirectoryRepository(configurationService configuration.ConfigurationService) *DynamoDbDirectoryRepository {
-	session := core.GetAwsSession(configurationService)
+func NewDynamoDbDirectoryRepository(appConfig *configuration.AppConfig) *DynamoDbDirectoryRepository {
+	session := configuration.GetAwsSession(appConfig)
 	client := dynamodb.New(session)
 
 	return &DynamoDbDirectoryRepository{
@@ -61,13 +60,20 @@ func (r *DynamoDbDirectoryRepository) Get(identifier string) (*models.Directory,
 
 func (r *DynamoDbDirectoryRepository) mapItemToDirectory(item map[string]*dynamodb.AttributeValue) *models.Directory {
 	return &models.Directory{
-		Id:                     item["Id"].String(),
-		Name:                   item["Name"].String(),
-		Host:                   item["Host"].String(),
-		Base:                   item["Base"].String(),
-		Type:                   item["Type"].String(),
-		AuthenticationType:     item["AuthenticationType"].String(),
-		ClientIdConfigName:     item["ClientIdConfigName"].String(),
-		ClientSecretConfigName: item["ClientSecretConfigName"].String(),
+		Id:                     r.getStringValue(item["Id"]),
+		Name:                   r.getStringValue(item["Name"]),
+		Host:                   r.getStringValue(item["Host"]),
+		Base:                   r.getStringValue(item["Base"]),
+		Type:                   r.getStringValue(item["Type"]),
+		AuthenticationType:     r.getStringValue(item["AuthenticationType"]),
+		ClientIdConfigName:     r.getStringValue(item["ClientIdConfigName"]),
+		ClientSecretConfigName: r.getStringValue(item["ClientSecretConfigName"]),
 	}
+}
+
+func (r *DynamoDbDirectoryRepository) getStringValue(item *dynamodb.AttributeValue) string {
+	if item.S == nil {
+		return ""
+	}
+	return aws.StringValue(item.S)
 }

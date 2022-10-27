@@ -5,6 +5,6 @@ type ConfigurationService interface {
 	GetSecret(name string) string
 }
 
-func NewConfigurationService() ConfigurationService {
-	return &environmentConfigurationService{}
+func NewConfigurationService(appConfig *AppConfig) ConfigurationService {
+	return NewSecretsManagerConfigurationService(appConfig)
 }

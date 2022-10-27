@@ -1,15 +1,14 @@
-package core
+package configuration
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/configuration"
 )
 
-func GetAwsSession(config configuration.ConfigurationService) *session.Session {
+func GetAwsSession(appConfig *AppConfig) *session.Session {
 
-	region := config.GetValue("aws_region")
+	region := appConfig.AwsRegion
 
 	session := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
