@@ -10,8 +10,9 @@ import (
 )
 
 type ldapDirectoryService struct {
-	baseDN     string
-	connection *ldap.Conn
+	baseDN        string
+	connection    *ldap.Conn
+	directoryName string
 }
 
 func NewLdapDirectoryService(directory *models.Directory, configurationService configuration.ConfigurationService) (DirectoryService, error) {
@@ -19,8 +20,9 @@ func NewLdapDirectoryService(directory *models.Directory, configurationService c
 	password := configurationService.GetSecret(directory.ClientSecretConfigName)
 
 	return &ldapDirectoryService{
-		baseDN:     directory.Base,
-		connection: getLdapConnection(directory.Host, userName, password),
+		baseDN:        directory.Base,
+		connection:    getLdapConnection(directory.Host, userName, password),
+		directoryName: directory.Name,
 	}, nil
 }
 
@@ -50,7 +52,7 @@ func (s *ldapDirectoryService) HandleUsers(action func([]*models.User)) error {
 	processor := func(items []*ldap.Entry) {
 		data := make([]*models.User, 0)
 		for _, item := range items {
-			user := mapSearchResultToUser(item)
+			user := mapSearchResultToUser(s.directoryName, item)
 			data = append(data, user)
 		}
 		action(data)
@@ -69,7 +71,7 @@ func (s *ldapDirectoryService) HandleGroups(action func([]*models.Group)) error 
 	processor := func(items []*ldap.Entry) {
 		data := make([]*models.Group, 0)
 		for _, item := range items {
-			group := mapSearchResultToGroup(item)
+			group := mapSearchResultToGroup(s.directoryName, item)
 			data = append(data, group)
 		}
 		action(data)

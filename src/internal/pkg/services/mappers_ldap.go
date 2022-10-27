@@ -45,11 +45,12 @@ func getGroupAttributes() []string {
 	}
 }
 
-func mapSearchResultToUser(result *ldap.Entry) *models.User {
+func mapSearchResultToUser(directoryName string, result *ldap.Entry) *models.User {
 	accountTypeRaw := result.GetAttributeValue("sAMAccountType")
 
 	return &models.User{
 		Id:            getObjectGuid(result).String(),
+		DirectoryName: directoryName,
 		ObjectType:    "User",
 		Location:      result.GetAttributeValue("distinguishedName"),
 		Upn:           result.GetAttributeValue("userPrincipalName"),
@@ -98,15 +99,16 @@ func mapAccountTypeToDescription(accountType string) string {
 	return accountType
 }
 
-func mapSearchResultToGroup(result *ldap.Entry) *models.Group {
+func mapSearchResultToGroup(directoryName string, result *ldap.Entry) *models.Group {
 	mappedType := mapGroupTypeToDescription(result.GetAttributeValue("groupType"))
 	return &models.Group{
-		Id:         getObjectGuid(result).String(),
-		ObjectType: "Group",
-		Location:   result.GetAttributeValue("distinguishedName"),
-		Name:       result.GetAttributeValue("sAMAccountName"),
-		Type:       mappedType,
-		Members:    result.GetAttributeValues("member"),
+		Id:            getObjectGuid(result).String(),
+		DirectoryName: directoryName,
+		ObjectType:    "Group",
+		Location:      result.GetAttributeValue("distinguishedName"),
+		Name:          result.GetAttributeValue("sAMAccountName"),
+		Type:          mappedType,
+		Members:       result.GetAttributeValues("member"),
 	}
 }
 
