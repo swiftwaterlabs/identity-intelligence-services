@@ -1,7 +1,10 @@
 package models
 
 type Group struct {
-	Id       string
-	Name     string
-	Location string
+	Id         string
+	ObjectType string
+	Location   string
+	Type       string
+	Name       string
+	Members    []string
 }

@@ -50,7 +50,7 @@ func (s *ldapDirectoryService) HandleUsers(action func([]*models.User)) error {
 	processor := func(items []*ldap.Entry) {
 		data := make([]*models.User, 0)
 		for _, item := range items {
-			user := MapSearchResultToUser(item)
+			user := mapSearchResultToUser(item)
 			data = append(data, user)
 		}
 		action(data)
@@ -59,7 +59,23 @@ func (s *ldapDirectoryService) HandleUsers(action func([]*models.User)) error {
 	return s.searchWithAction(filterCriteria, fields, processor)
 }
 func (s *ldapDirectoryService) HandleGroups(action func([]*models.Group)) error {
-	return nil
+	if action == nil {
+		return errors.New("no action defined")
+	}
+
+	filterCriteria := "(&(objectClass=group))"
+	fields := getGroupAttributes()
+
+	processor := func(items []*ldap.Entry) {
+		data := make([]*models.Group, 0)
+		for _, item := range items {
+			group := mapSearchResultToGroup(item)
+			data = append(data, group)
+		}
+		action(data)
+	}
+
+	return s.searchWithAction(filterCriteria, fields, processor)
 }
 func (s *ldapDirectoryService) Close() {
 	s.connection.Close()

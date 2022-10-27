@@ -35,7 +35,17 @@ func getUserAttributes() []string {
 	}
 }
 
-func MapSearchResultToUser(result *ldap.Entry) *models.User {
+func getGroupAttributes() []string {
+	return []string{
+		"objectGUID",
+		"sAMAccountName",
+		"groupType",
+		"distinguishedName",
+		"member",
+	}
+}
+
+func mapSearchResultToUser(result *ldap.Entry) *models.User {
 	accountTypeRaw := result.GetAttributeValue("sAMAccountType")
 
 	return &models.User{
@@ -48,7 +58,7 @@ func MapSearchResultToUser(result *ldap.Entry) *models.User {
 		GivenName:     result.GetAttributeValue("givenName"),
 		Surname:       result.GetAttributeValue("sn"),
 		Manager:       result.GetAttributeValue("manager"),
-		Type:          MapAccountTypeToDescription(accountTypeRaw),
+		Type:          mapAccountTypeToDescription(accountTypeRaw),
 		Company:       result.GetAttributeValue("company"),
 		Department:    result.GetAttributeValue("department"),
 		Status:        result.GetAttributeValue("userAccountControl"),
@@ -67,7 +77,7 @@ func MapSearchResultToUser(result *ldap.Entry) *models.User {
 
 }
 
-func MapAccountTypeToDescription(accountType string) string {
+func mapAccountTypeToDescription(accountType string) string {
 	knownTypes := map[string]string{
 		"268435456":  "SAM_GROUP_OBJECT",
 		"268435457":  "SAM_NON_SECURITY_GROUP_OBJECT",
@@ -86,6 +96,35 @@ func MapAccountTypeToDescription(accountType string) string {
 		return description
 	}
 	return accountType
+}
+
+func mapSearchResultToGroup(result *ldap.Entry) *models.Group {
+	mappedType := mapGroupTypeToDescription(result.GetAttributeValue("groupType"))
+	return &models.Group{
+		Id:         getObjectGuid(result).String(),
+		ObjectType: "Group",
+		Location:   result.GetAttributeValue("distinguishedName"),
+		Name:       result.GetAttributeValue("sAMAccountName"),
+		Type:       mappedType,
+		Members:    result.GetAttributeValues("member"),
+	}
+}
+
+func mapGroupTypeToDescription(value string) string {
+	knownTypes := map[string]string{
+		"2":           "Global distribution group",
+		"4":           "Domain Local distribution group",
+		"8":           "Universal distribution group",
+		"-2147483646": "Global security group",
+		"-2147483644": "Domain Local security group",
+		"-2147483640": "Universal security group",
+	}
+
+	description, exists := knownTypes[value]
+	if exists {
+		return description
+	}
+	return value
 }
 
 func getAttributeTimestamp(entry *ldap.Entry, name string) time.Time {
