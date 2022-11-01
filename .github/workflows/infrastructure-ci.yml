@@ -1,4 +1,4 @@
-ame: terraform-continuous-integration
+name: terraform-continuous-integration
 
 on:
   workflow_dispatch:
