@@ -20,7 +20,7 @@ type S3DirectoryObjectRepository struct {
 }
 
 func (r *S3DirectoryObjectRepository) init(config configuration.ConfigurationService) {
-	r.bucketName = config.GetValue("identity_intelligence_prd_directories_aws_region")
+	r.bucketName = config.GetValue("identity_intelligence_prd_blob_store")
 	r.awsRegion = config.GetValue("aws_region")
 	r.fileUploader = r.initS3Uploader()
 }
