@@ -98,7 +98,7 @@ resource "aws_glue_catalog_table" "user" {
   }
 }
 
-esource "aws_glue_catalog_table" "group" {
+resource "aws_glue_catalog_table" "group" {
   name          = "group"
   database_name = aws_glue_catalog_database.object_db.name
 
