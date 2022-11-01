@@ -18,7 +18,7 @@ resource "aws_s3_bucket_public_access_block" "signal_data" {
 }
 
 resource "aws_s3_bucket" "athena_resources" {
-  bucket = "${local.service_name}_athena"
+  bucket = local.athena_bucket_name
 }
 
 resource "aws_s3_bucket_acl" "athena_resources" {
