@@ -13,6 +13,13 @@ resource "aws_lambda_function" "signal_persistance" {
   handler           = "main"
   source_code_hash  = filebase64sha256(data.archive_file.signal_persistance_lambda_zip.output_path)
   runtime           = "go1.x"
+
+  environment {
+    variables = {
+      aws_region = var.aws_region
+      directoryobject_blobstore = local.signal_bucket_name
+    }
+  }
   
 }
 
