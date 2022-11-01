@@ -10,6 +10,6 @@ type DirectoryRepository interface {
 	Get(identifier string) (*models.Directory, error)
 }
 
-func NewDirectoryRepository(appConfig *configuration.AppConfig) DirectoryRepository {
-	return NewDynamoDbDirectoryRepository(appConfig)
+func NewDirectoryRepository(appConfig *configuration.AppConfig, config configuration.ConfigurationService) DirectoryRepository {
+	return NewDynamoDbDirectoryRepository(appConfig, config)
 }

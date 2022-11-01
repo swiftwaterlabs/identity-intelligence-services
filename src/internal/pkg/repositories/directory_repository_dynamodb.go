@@ -7,12 +7,12 @@ import (
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/models"
 )
 
-func NewDynamoDbDirectoryRepository(appConfig *configuration.AppConfig) *DynamoDbDirectoryRepository {
+func NewDynamoDbDirectoryRepository(appConfig *configuration.AppConfig, config configuration.ConfigurationService) *DynamoDbDirectoryRepository {
 	session := configuration.GetAwsSession(appConfig)
 	client := dynamodb.New(session)
 
 	return &DynamoDbDirectoryRepository{
-		tableName: "identity-directories",
+		tableName: config.GetValue("identity_intelligence_prd_directories_table"),
 		client:    client,
 	}
 }

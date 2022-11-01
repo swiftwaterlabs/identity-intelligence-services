@@ -70,15 +70,18 @@ func processDirectoryUsers(directory *models.Directory,
 
 	defer directoryService.Close()
 
-	publishingQueue := configuration.GetValue("directoryobject_queue")
+	publishingQueue := configuration.GetValue("identity_intelligence_prd_ingestion_queue")
 
 	counter := 0
+	log.Printf("Sending users to %s", publishingQueue)
 	handler := func(data []*models.User) {
 		toPublish := core.ToInterfaceSlice(data)
-		userDataHub.SendBulk(toPublish, publishingQueue)
-
+		err := userDataHub.SendBulk(toPublish, publishingQueue)
+		if err != nil {
+			log.Println(err)
+		}
 		counter += len(data)
-		log.Printf("Prorcessed %v users in %s", counter, directory.Name)
+		log.Printf("Processed %v users in %s", counter, directory.Name)
 	}
 
 	err = directoryService.HandleUsers(handler)

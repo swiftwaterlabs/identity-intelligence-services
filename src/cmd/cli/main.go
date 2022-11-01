@@ -21,7 +21,7 @@ func main() {
 		AwsRegion: os.Getenv("aws_region"),
 	}
 	configurationService := configuration.NewConfigurationService(appConfig)
-	directoryRepository := repositories.NewDirectoryRepository(appConfig)
+	directoryRepository := repositories.NewDirectoryRepository(appConfig, configurationService)
 	messageHub := messaging.NewMessageHub(appConfig)
 
 	switch strings.ToLower(*objectArgument) {
