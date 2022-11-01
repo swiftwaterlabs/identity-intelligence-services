@@ -19,6 +19,13 @@ select u.id,
         when u.location like '%OU=Admin Account%' then 'Admin Account'
         else 'User Account'
     end as user_type,
+    case 
+        when u.type = 'SAM_MACHINE_ACCOUNT' then true
+        when u.location like '%OU=Service Account%' then true
+        when u.location like '%OU=Resource Account%' then true
+        when u.location like '%OU=Admin Account%' then false
+        else false
+    end as is_non_human,
     case
          when u.location like '%OU=Terminated%' then 'Terminated'
          when u.location like '%OU=Active%' then 'Active'
