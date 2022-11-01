@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/configuration"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/core"
+	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/messaging"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/models"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/repositories"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/services"
@@ -15,7 +16,8 @@ import (
 
 func ExtractUsers(directoryName string,
 	configurationService configuration.ConfigurationService,
-	directoryRepository repositories.DirectoryRepository) error {
+	directoryRepository repositories.DirectoryRepository,
+	userDataHub messaging.MessageHub) error {
 
 	directories, err := getDirectories(directoryName, directoryRepository)
 	if err != nil {
@@ -32,7 +34,7 @@ func ExtractUsers(directoryName string,
 
 		go func(directory *models.Directory, config configuration.ConfigurationService) {
 			defer awaiter.Done()
-			processingErr := processDirectoryUsers(directory, config)
+			processingErr := processDirectoryUsers(directory, config, userDataHub)
 			if processingErr != nil {
 				processingErrors[item.Name] = processingErr
 			}
@@ -58,7 +60,9 @@ func getDirectories(directoryName string,
 	return []*models.Directory{result}, nil
 }
 
-func processDirectoryUsers(directory *models.Directory, configuration configuration.ConfigurationService) error {
+func processDirectoryUsers(directory *models.Directory,
+	configuration configuration.ConfigurationService,
+	userDataHub messaging.MessageHub) error {
 	directoryService, err := services.NewDirectoryService(directory, configuration)
 	if err != nil {
 		return err
@@ -66,12 +70,14 @@ func processDirectoryUsers(directory *models.Directory, configuration configurat
 
 	defer directoryService.Close()
 
+	publishingQueue := configuration.GetValue("directoryobject_queue")
+
 	counter := 0
 	handler := func(data []*models.User) {
-		for _, item := range data {
-			core.MapToJson(item)
-			counter++
-		}
+		toPublish := core.ToInterfaceSlice(data)
+		userDataHub.SendBulk(toPublish, publishingQueue)
+
+		counter += len(data)
 		log.Printf("Prorcessed %v users in %s", counter, directory.Name)
 	}
 

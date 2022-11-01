@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/configuration"
+	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/messaging"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/orchestration"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/repositories"
 	"log"
@@ -21,10 +22,11 @@ func main() {
 	}
 	configurationService := configuration.NewConfigurationService(appConfig)
 	directoryRepository := repositories.NewDirectoryRepository(appConfig)
+	messageHub := messaging.NewMessageHub(appConfig)
 
 	switch strings.ToLower(*objectArgument) {
 	case "user":
-		err := orchestration.ExtractUsers(*directoryArgument, configurationService, directoryRepository)
+		err := orchestration.ExtractUsers(*directoryArgument, configurationService, directoryRepository, messageHub)
 		if err != nil {
 			log.Fatal(err)
 		}
