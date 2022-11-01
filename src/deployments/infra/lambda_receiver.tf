@@ -17,7 +17,7 @@ resource "aws_lambda_function" "signal_persistance" {
   environment {
     variables = {
       aws_region = var.aws_region
-      directoryobject_blobstore = aws_s3_bucket.signal_data.id
+      directoryobject_blobstore = local.signal_bucket_name
     }
   }
   
