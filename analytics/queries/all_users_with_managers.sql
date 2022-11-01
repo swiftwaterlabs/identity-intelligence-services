@@ -15,15 +15,15 @@ select u.id,
     case 
         when u.type = 'SAM_MACHINE_ACCOUNT' then 'Machine Account'
         when u.location like '%OU=Service Account%' then 'Service Account'
-        when u.location like '%OU=Resource Account%' then 'Resource Account'
         when u.location like '%OU=Admin Account%' then 'Admin Account'
+        when u.location like '%OU=Resource Account%' then 'Resource Account'
         else 'User Account'
     end as UserType,
     case 
         when u.type = 'SAM_MACHINE_ACCOUNT' then true
         when u.location like '%OU=Service Account%' then true
-        when u.location like '%OU=Resource Account%' then true
         when u.location like '%OU=Admin Account%' then false
+        when u.location like '%OU=Resource Account%' then true
         else false
     end as IsNonHumanAccount,
     case
@@ -44,8 +44,8 @@ select u.id,
         when um.type is null or um.type = '' then null
         when um.type = 'SAM_MACHINE_ACCOUNT' then 'Machine Account'
         when um.location like '%OU=Service Account%' then 'Service Account'
-        when um.location like '%OU=Resource Account%' then 'Resource Account'
         when um.location like '%OU=Admin Account%' then 'Admin Account'
+        when um.location like '%OU=Resource Account%' then 'Resource Account'
         else 'User Account'
     end as ManagerUserType,
     case
