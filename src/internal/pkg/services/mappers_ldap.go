@@ -1,11 +1,12 @@
 package services
 
 import (
+	"strconv"
+	"time"
+
 	"github.com/go-ldap/ldap/v3"
 	"github.com/google/uuid"
 	"github.com/swiftwaterlabs/identity-intelligence-services/internal/pkg/models"
-	"strconv"
-	"time"
 )
 
 func getUserAttributes() []string {
@@ -50,7 +51,7 @@ func mapSearchResultToUser(directoryName string, result *ldap.Entry) *models.Use
 
 	return &models.User{
 		Id:            getObjectGuid(result).String(),
-		DirectoryName: directoryName,
+		Directory:     directoryName,
 		ObjectType:    "User",
 		Location:      result.GetAttributeValue("distinguishedName"),
 		Upn:           result.GetAttributeValue("userPrincipalName"),
@@ -102,13 +103,13 @@ func mapAccountTypeToDescription(accountType string) string {
 func mapSearchResultToGroup(directoryName string, result *ldap.Entry) *models.Group {
 	mappedType := mapGroupTypeToDescription(result.GetAttributeValue("groupType"))
 	return &models.Group{
-		Id:            getObjectGuid(result).String(),
-		DirectoryName: directoryName,
-		ObjectType:    "Group",
-		Location:      result.GetAttributeValue("distinguishedName"),
-		Name:          result.GetAttributeValue("sAMAccountName"),
-		Type:          mappedType,
-		Members:       result.GetAttributeValues("member"),
+		Id:         getObjectGuid(result).String(),
+		Directory:  directoryName,
+		ObjectType: "Group",
+		Location:   result.GetAttributeValue("distinguishedName"),
+		Name:       result.GetAttributeValue("sAMAccountName"),
+		Type:       mappedType,
+		Members:    result.GetAttributeValues("member"),
 	}
 }
 
