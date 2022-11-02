@@ -13,11 +13,10 @@ import (
 	"sync"
 )
 
-func ExtractUsers(directoryName string,
+func ExtractGroups(directoryName string,
 	configurationService configuration.ConfigurationService,
 	directoryRepository repositories.DirectoryRepository,
 	userDataHub messaging.MessageHub) error {
-
 	directories, err := getDirectories(directoryName, directoryRepository)
 	if err != nil {
 		return err
@@ -33,7 +32,7 @@ func ExtractUsers(directoryName string,
 
 		go func(directory *models.Directory, config configuration.ConfigurationService) {
 			defer awaiter.Done()
-			processingErr := processDirectoryUsers(directory, config, userDataHub)
+			processingErr := processDirectoryGroups(directory, config, userDataHub)
 			if processingErr != nil {
 				processingErrors[item.Name] = processingErr
 			}
@@ -42,12 +41,11 @@ func ExtractUsers(directoryName string,
 	awaiter.Wait()
 
 	return core.ConsolidateErrorMap(processingErrors)
-
 }
 
-func processDirectoryUsers(directory *models.Directory,
+func processDirectoryGroups(directory *models.Directory,
 	configuration configuration.ConfigurationService,
-	userDataHub messaging.MessageHub) error {
+	dataHub messaging.MessageHub) error {
 	directoryService, err := services.NewDirectoryService(directory, configuration)
 	if err != nil {
 		return err
@@ -58,18 +56,18 @@ func processDirectoryUsers(directory *models.Directory,
 	publishingQueue := configuration.GetValue("identity_intelligence_prd_ingestion_queue")
 
 	counter := 0
-	log.Printf("Sending users to %s", publishingQueue)
-	handler := func(data []*models.User) {
+	log.Printf("Sending groups to %s", publishingQueue)
+	handler := func(data []*models.Group) {
 		toPublish := core.ToInterfaceSlice(data)
-		err := userDataHub.SendBulk(toPublish, publishingQueue)
+		err := dataHub.SendBulk(toPublish, publishingQueue)
 		if err != nil {
 			log.Println(err)
 		}
 		counter += len(data)
-		log.Printf("Processed %v users in %s", counter, directory.Name)
+		log.Printf("Processed %v groups in %s", counter, directory.Name)
 	}
 
-	err = directoryService.HandleUsers(handler)
+	err = directoryService.HandleGroups(handler)
 	return err
 
 }
