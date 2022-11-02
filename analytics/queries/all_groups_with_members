@@ -1,0 +1,14 @@
+select g.id as Id,
+    g.name as Name,
+    g.location as Location,
+    g.type as Type,
+    gm.id is not null as HasMembers,
+    gm.MemberCount
+from identity_intelligence_prd."group" g
+left join (
+        select id,
+            count(member) as MemberCount
+        from identity_intelligence_prd."group" 
+        CROSS JOIN UNNEST(members) AS t(member)
+        group by id
+        ) as gm on g.id = gm.id
