@@ -15,15 +15,17 @@ select u.id,
     case 
         when u.type = 'SAM_MACHINE_ACCOUNT' then 'Machine Account'
         when u.location like '%OU=Service Account%' then 'Service Account'
-        when u.location like '%OU=Resource Account%' then 'Resource Account'
         when u.location like '%OU=Admin Account%' then 'Admin Account'
+        when u.location like '%OU=TelePresence%' then 'TelePresence Account'
+        when u.location like '%OU=Gmail_Shared_Accts%' then 'Gmail Shared Account'
+        when u.location like '%OU=Resource Account%' then 'Resource Account'
         else 'User Account'
     end as UserType,
     case 
-        when u.type = 'SAM_MACHINE_ACCOUNT' then true
+        when u.type = 'SAM_MACHINE_ACCOUNT' then false
         when u.location like '%OU=Service Account%' then true
-        when u.location like '%OU=Resource Account%' then true
         when u.location like '%OU=Admin Account%' then false
+        when u.location like '%OU=Resource Account%' then true
         else false
     end as IsNonHumanAccount,
     case
@@ -39,13 +41,18 @@ select u.id,
     um.location as ManagerLocation,
     um.name as ManagerName,
     um.upn as ManagerUpn,
+    um.department as ManagerDepartment,
+    um.company as ManagerCompany,
+    um.title as ManagerJobTitle,
     trim(um.givenname) || ' ' || trim(um.surname) as ManagerFullName,
     case 
         when um.type is null or um.type = '' then null
         when um.type = 'SAM_MACHINE_ACCOUNT' then 'Machine Account'
         when um.location like '%OU=Service Account%' then 'Service Account'
-        when um.location like '%OU=Resource Account%' then 'Resource Account'
         when um.location like '%OU=Admin Account%' then 'Admin Account'
+        when u.location like '%OU=TelePresence%' then 'TelePresence Account'
+        when u.location like '%OU=Gmail_Shared_Accts%' then 'Gmail Shared Account'
+        when um.location like '%OU=Resource Account%' then 'Resource Account'
         else 'User Account'
     end as ManagerUserType,
     case
@@ -56,5 +63,5 @@ select u.id,
          when um.type = 'SAM_MACHINE_ACCOUNT' or um.location like '%OU=Service Account%' or um.location like '%OU=Resource Account%' then 'Active'
          else 'Unknown'
     end as ManagerStatus
-from user u
-left join user um on u.manager = um.location
+from identity_intelligence_prd.user u
+left join identity_intelligence_prd.user um on u.manager = um.location
