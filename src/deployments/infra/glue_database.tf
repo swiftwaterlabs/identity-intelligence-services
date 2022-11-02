@@ -151,5 +151,10 @@ resource "aws_glue_catalog_table" "group" {
       name = "objecttype"
       type = "string"
     }
+
+    columns {
+      name = "members"
+      type = "array<string>"
+    }
   }
 }
