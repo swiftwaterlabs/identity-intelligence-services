@@ -13,10 +13,12 @@ import (
 
 var (
 	directoryArgument = flag.String("directory", "", "Directory to Search")
-	objectArgument    = flag.String("object", "user", "Type of object to search.  Default is user")
+	objectArgument    = flag.String("object", "", "Type of object to search.  Default is user")
 )
 
 func main() {
+	flag.Parse()
+
 	appConfig := &configuration.AppConfig{
 		AwsRegion: os.Getenv("aws_region"),
 	}
@@ -27,6 +29,11 @@ func main() {
 	switch strings.ToLower(*objectArgument) {
 	case "user":
 		err := orchestration.ExtractUsers(*directoryArgument, configurationService, directoryRepository, messageHub)
+		if err != nil {
+			log.Fatal(err)
+		}
+	case "group":
+		err := orchestration.ExtractGroups(*directoryArgument, configurationService, directoryRepository, messageHub)
 		if err != nil {
 			log.Fatal(err)
 		}
