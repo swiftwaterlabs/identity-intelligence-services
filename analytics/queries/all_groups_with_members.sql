@@ -27,4 +27,4 @@ from(
 CROSS JOIN UNNEST(members) AS t(member)
 ) as gm
 left join identity_intelligence_prd."user" as u on gm.MemberLocation = u.location
-left join identity_intelligence_prd."group" as g on gm.Id = g.id
+left join identity_intelligence_prd."group" as g on gm.MemberLocation = g.location
