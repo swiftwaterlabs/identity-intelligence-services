@@ -99,4 +99,9 @@ go run main.go -object user -directory corp.mycompany.com
 ## 6. Tableau Analytics
 Once the desired directories to be analyzed are read from, it is now time to gain insights from the data.  Using queries in the [analytics/queries](../analytics/queries/) directory, create data extracts (either text or hyperfile format) for each one.  Once data is extracted, upload or open the sample workbooks in the [analytics/tableau/workbooks](../analytics/tableau/workbooks/) directory and replace each source with the matching query in your installation.
 
+## 7. Start Gaining Insights
+Using the data exposed via Tableau workbooks, start gaining insights on the data from your directories!
+
 # Development Environment Setup
+To set up your development environment, follow the steps above in the _How to Use_ section.
+Once complete, you should be able to open this solution in an editor of your choice and start making changes / running on your own.
