@@ -41,6 +41,9 @@ Using the sample Tableau workbooks, when the Identity Intelligence Services are 
 # How To Use
 The Identity Intelligence Services solution is broken down into two pieces - data collection and analytics.
 
+## Components
+ ![Component Diagram](/docs/identity-intelligence.png)
+
 ## Data Collection
 To install, configure, and collect data so it is available for analysis, follow information in the [src/ReadMe](src/README.md)
 
